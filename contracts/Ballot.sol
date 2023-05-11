@@ -76,6 +76,7 @@ contract Ballot {
         // assigns reference
         Voter storage sender = voters[msg.sender];
         require(sender.weight != 0, "You have no right to vote");
+        require(sender.delegate == address(0), "You have delegated your vote to another voter");
         require(!sender.voted, "You already voted.");
 
         require(to != msg.sender, "Self-delegation is disallowed.");
@@ -98,7 +99,7 @@ contract Ballot {
         Voter storage delegate_ = voters[to];
 
         // Voters cannot delegate to accounts that cannot vote.
-        require(delegate_.weight >= 1);
+        require(delegate_.weight >= 1, "Voter cannot delegate to account that cannot vote");
 
         // Since `sender` is a reference, this
         // modifies `voters[msg.sender]`.

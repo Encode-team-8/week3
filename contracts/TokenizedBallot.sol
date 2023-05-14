@@ -5,15 +5,22 @@ interface IMyVotingToken {
   function getPastVotes(address, uint256) external view returns (uint256);
 }
 
-contract Ballot {
+contract TokenizedBallot {
     struct Proposal {
         bytes32 name;
         uint voteCount; 
     }
 
+    struct DeployedProposal {
+        string name;
+        uint voteCount;
+    }
+
     IMyVotingToken public tokenContract;
     Proposal[] public proposals;
     uint256 public targetBlockNumber;
+
+    mapping(address => uint) public votesUsed;
 
     constructor(bytes32[] memory proposalNames, address _tokenContract, uint256 _targetBlockNumber) {
         tokenContract = IMyVotingToken(_tokenContract);
@@ -26,14 +33,32 @@ contract Ballot {
         }
     }
 
-  
-    function vote(uint proposal, uint256 amount) external {
-        tokenContract.getPastVotes(msg.sender, targetBlockNumber);
-        proposals[proposal].voteCount += amount;
+    function getProposals() public view returns (DeployedProposal[] memory) {
+        DeployedProposal[] memory result = new DeployedProposal[](proposals.length);
+        for (uint i = 0; i < proposals.length; i++) {
+            bytes32 name = proposals[i].name;
+            bytes memory nameBytes = new bytes(32);
+            assembly {
+                mstore(add(nameBytes, 32), name)
+            }
+            string memory nameString = string(nameBytes);
+            result[i] = DeployedProposal({
+            name: nameString,
+            voteCount: proposals[i].voteCount
+        });
+        }
+        return result;
     }
 
-    function votingPower(address account) public view returns (uint256) {
-      return tokenContract.getPastVotes(account, targetBlockNumber);
+    function votingPower(address _account) public view returns (uint256) {
+      return tokenContract.getPastVotes(_account, targetBlockNumber) - votesUsed[_account];
+    }
+
+    
+    function vote(uint proposal, uint256 _amount) external {
+        require(votingPower(msg.sender) >= _amount, "Not enough voting power");
+        votesUsed[msg.sender] += _amount;
+        proposals[proposal].voteCount += _amount;
     }
 
     function winningProposal() public view

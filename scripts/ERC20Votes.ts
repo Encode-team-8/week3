@@ -80,7 +80,9 @@ async function main() {
   const tokenizedBallotContractTx = await tokenizeBallotContract.deployed();
 
   const deployedProposals = await tokenizedBallotContractTx.getProposals();
-  console.log(`Deployed Proposals:\n -- ${deployedProposals.join("\n -- ")}`);
+  console.log(
+    `Ballot polling after deployment:\n -- ${deployedProposals.join("\n -- ")}`
+  );
 }
 main().catch((err) => {
   console.log(err);

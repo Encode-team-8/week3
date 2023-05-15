@@ -52,4 +52,6 @@ https://sepolia.etherscan.io/tx/0x01ec50aa3f087458a4432ae6381ff9ebdfea91b984578d
 
 Ballot Summary:
 
+![image](https://github.com/Encode-team-8/week3/assets/65736142/f387ec6a-2a8d-47d1-8114-1a15d64047ed)
+
 ### Status: `Success`

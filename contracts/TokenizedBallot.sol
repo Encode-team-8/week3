@@ -59,6 +59,7 @@ contract TokenizedBallot {
         require(votingPower(msg.sender) >= _amount, "Not enough voting power");
         votesUsed[msg.sender] += _amount;
         proposals[proposal].voteCount += _amount;
+        
     }
 
     function winningProposal() public view

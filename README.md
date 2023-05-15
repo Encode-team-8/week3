@@ -46,7 +46,7 @@ https://sepolia.etherscan.io/tx/0x82c2c5c2c29bea43a456af351d01e4862cb28311eb7352
 https://sepolia.etherscan.io/tx/0x6737a18f7e3176e98889f2d65475c403c51b43ed3081fb3737f854ec34751f93
 https://sepolia.etherscan.io/tx/0x01ec50aa3f087458a4432ae6381ff9ebdfea91b984578d86713dd17a14cb9ce9
 
-### Status: `Fail`
+### Status: `Success`
 
 <br />
 

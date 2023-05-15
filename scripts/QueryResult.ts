@@ -1,31 +1,33 @@
-import { ethers } from 'hardhat';
-import { Ballot__factory } from '../typechain-types';
-require('dotenv').config();
+import { ethers } from "hardhat";
+import { TokenizedBallot__factory } from "../typechain-types/factories/contracts/TokenizedBallot.sol/TokenizedBallot__factory";
+require("dotenv").config();
 
-const CONTRACT_ADDRESS = '0x9B41bc4De53eC3E7ac104015D25e4cA61256D864';
+const BALLOT_ADDRESS = "0xAD21b9F74993F8DBf4028e06b9C4d9FC03f9D537";
 
 async function main() {
   const provider = new ethers.providers.InfuraProvider(
-    'sepolia',
+    "sepolia",
     process.env.INFURA_API_KEY
   );
+  const wallet1 = new ethers.Wallet(
+    process.env.PRIVATE_KEY_ACC1 ?? "",
+    provider
+  );
 
-  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY ?? '', provider);
+  const signer1 = wallet1.connect(provider);
 
-  const signer = wallet.connect(provider);
-  const balance = await signer.getBalance();
-  console.log(`Wallet balance: ${balance} Wei`);
-
-  // 1: Attach Contract
-  const ballotCF = new Ballot__factory(signer);
-  console.log('Attaching to contract ...');
-  const ballotC = ballotCF.attach(CONTRACT_ADDRESS);
-  console.log(`Attached to Ballot contract at ${ballotC.address}`);
-
-  // 2: Query winning proposal
-  let winningName = await ballotC.winnerName();
+  const tokenizedBallotFactory = new TokenizedBallot__factory(signer1);
+  const tokenizedBallotContract = tokenizedBallotFactory.attach(BALLOT_ADDRESS);
+  const deployedProposals = await tokenizedBallotContract.getProposals();
   console.log(
-    `winning proposal is ${ethers.utils.parseBytes32String(winningName)}`
+    `Latest ballot numbers:\n${deployedProposals
+      .map((proposal, i) => `  Prop ${i + 1}: ${proposal.join(" -- ")}\n`)
+      .join("")}\n`
+  );
+  const getCurrentLeader = await tokenizedBallotContract.winningProposal();
+
+  console.log(
+    `Proposal ${getCurrentLeader.add(1)} is currently leading the vote.`
   );
 }
 

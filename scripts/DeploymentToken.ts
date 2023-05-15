@@ -7,14 +7,17 @@ async function main() {
     "sepolia",
     process.env.INFURA_API_KEY
   );
-  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY ?? "", provider);
+  const wallet = new ethers.Wallet(
+    process.env.PRIVATE_KEY_ACC1 ?? "",
+    provider
+  );
   const signer = wallet.connect(provider);
 
   /**
    * Deploy token contract
    */
   const tokenFactory = await ethers.getContractFactory("MyERC20Votes", signer);
-  const tokenContract = await tokenFactory.deploy({ gasLimit: 2000000 });
+  const tokenContract = await tokenFactory.deploy({ gasLimit: 20000000 });
   const deployTx = await tokenContract.deployTransaction.wait();
   await tokenContract.deployed();
   console.log(
